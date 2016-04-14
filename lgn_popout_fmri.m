@@ -23,12 +23,16 @@ global rect
 %Priority(1);
 rng('shuffle');
 
-monitorh=30; %12;% in cm
-distance=55; %25;% in cm
+monitorh=34.3; %30; %12;% in cm
+distance=110.5; %55; %25;% in cm
 sid = 0;
 srect = [0 0 1024 768];
 rng('shuffle');
 ntrial = 32;
+
+subj=input('subject?','s');
+session = input('session? (pre/post)','s');
+run=input('run? ');
 
 %% geometry
 fixsi = 8;
@@ -54,10 +58,16 @@ tstart_tr = cumsum([1,isi(1:end-1)+searchtime])+pretr;
 gray = [127 127 127];
 white = [255 255 255];
 black = [0 0 0];
-red = [175,87,87];
-green = [69,138,69];
+% red = [175,87,87];
+% green = [69,138,69];
 truegreen = [0 255 0];
 truered = [255 0 0];
+
+% read iso colors
+path_color = [pwd,'/subinfo/',subj,'_fmri.mat'];
+rg = load(path_color);
+red = rg.rg(1,:);
+green = rg.rg(2,:);
 
 fixcolor = white;
 %textcolor = black;
@@ -109,9 +119,6 @@ else
 end
 
 %% open files
-subj=input('subject?','s');
-session = input('session? (pre/post)','s');
-run=input('run? ');
 path_data = [pwd,'/data/popout-',subj,'-',session,'-run',num2str(run)];
 log_data = [pwd,'/data/popout-',subj,'-',session,'-run',num2str(run),'-log'];
 design_data = [pwd,'/data/popout-',subj,'-',session,'-run',num2str(run),'-design'];
@@ -142,16 +149,16 @@ center = [(rect(3)-rect(1))/2, (rect(4)-rect(2))/2];
 fixRect = CenterRect([0 0 fixsi fixsi], rect);
 
 % construct stimuli
-corticalStimSize= 6.5;%in mm
-proximalStimDist=.8;% in degrees!!
-stimSeparation= 1.2; %in degrees, to be scaled
-jitterDistance=.12;%in degrees; to be scaled
+corticalStimSize= 5.5;%in mm
+proximalStimDist=.5;% in degrees!!
+stimSeparation= .7; %in degrees, to be scaled
+jitterDistance=.08;%in degrees; to be scaled
 jitfreq = 5;
 
 %empty variable
 stimLocation = NaN(nrings,stimPerRing,4);
 stimSize=NaN(nrings,4);
-eccentricity=NaN(nrings);
+eccentricity=NaN(nrings,1);
 
 separationAngle=360/stimPerRing;
 compass = separationAngle:separationAngle:360; %rectangle

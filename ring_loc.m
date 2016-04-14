@@ -17,8 +17,8 @@ global rect
 %Priority(1);
 rng('shuffle');
 
-monitorh=30; %12;% in cm
-distance=55; %25;% in cm
+monitorh=34.3; %30; %12;% in cm
+distance=110.5; %55; %25;% in cm
 
 tr = 0;
 pretr = 5;
@@ -123,11 +123,11 @@ for p = 1:npics
     orig_pics{p} = imread(['./checkerboards/bildAll',num2str(p),'.png']);
 end
 
-% construct stimuli %% same as in lgn_search!!!!!
-corticalStimSize= 6.5;%in mm
-proximalStimDist=.8;% in degrees!!
-stimSeparation= 1.2; %in degrees, to be scaled
-jitterDistance=.12;%in degrees; to be scaled
+% construct stimuli
+corticalStimSize= 5.5;%in mm
+proximalStimDist=.5;% in degrees!!
+stimSeparation= .7; %in degrees, to be scaled
+jitterDistance=.08;%in degrees; to be scaled
 
 %generate radius
 ringRadius = NaN(nrings,2); %need an inner radius and an outer radius
