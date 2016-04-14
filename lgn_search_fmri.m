@@ -134,7 +134,7 @@ outlog = fopen(log_data,'w');
 fprintf(outlog,'%s\t %s\n','when','what');
 
 outfile = fopen(path_data,'w');
-fprintf(outfile,'%s\t %s\t %s\t %s\t %s\t %s\n','subject' ,'session' ,'trial','targetindex' , 'keypressed' , 'cor');
+fprintf(outfile,'%s\t %s\t %s\t %s\t %s\t %s\t %s\n','subject' ,'session' ,'trial','targetindex' , 'keypressed' , 'cor', 'rt');
 
 %% initialize window
 [mainwin,rect] = Screen('OpenWindow', sid, bgcolor, srect);
@@ -255,8 +255,8 @@ for trial = 1:ntrial
         Screen('FillRect', mainwin, truered, fixRect);
         cor(trial) = 0;
     end
-    fprintf(outfile,'%s\t %s\t %d\t %d\t %d\t %d\n', ...
-        subj, session, trial, ti, keypressed, cor(trial));
+    fprintf(outfile,'%s\t %s\t %d\t %d\t %d\t %d\t %d\n', ...
+        subj, session, trial, ti, keypressed, cor(trial),rt);
     Screen('Flip', mainwin);
     WaitSecs(.5);
     
