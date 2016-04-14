@@ -45,7 +45,7 @@ nfix = numel(fixtr);
 sid = 0;
 srect = [0 0 1024 768];
 fixsi = 8;
-checkfreq = 8; %flickering at 8 Hz
+checkfreq = 16; %flickering at 8 Hz
 nmeridians = 2;
 radius_mask = srect(4); % mask to create meridians
 
