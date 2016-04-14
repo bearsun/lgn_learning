@@ -1,30 +1,31 @@
-function ring_loc( debug )
-%RING_LOC localizer for rings in lgn study
-%   4/14/16 Liwei
-% 3 rings to localize, repeat 8 times
+function meridian_loc( debug )
+%MERIDIAN_LOC Meridian localizer for quick retinotopy
+%   4/14/16 Liwei Sun
+
+% 2 Meridians to localize, repeat 8 times
 % each block: 12s-12s-12s-12s
 % 2s TRs
-% 296TRs, 10.5 min, actual images: 5 + 48 * 6 = 293 TRs
+% 200 TRs, 7.5min, actual image: 5+32*6 = 197 TRs
 
 %% initialize everything
 clc;
 global ptb_RootPath %#ok<NUSED>
-global monitorh
-global distance
-global rect
+% global monitorh
+% global distance
+% global rect
 
 %AssertOpenGL;
 %Priority(1);
 rng('shuffle');
 
-monitorh=30; %12;% in cm
-distance=55; %25;% in cm
+% monitorh=30; %12;% in cm
+% distance=55; %25;% in cm
 
 tr = 0;
 pretr = 5;
 blocktr = 6;
 nrepeat = 8;
-blocktypes = [1 2 3]; %ring 1,2,3
+blocktypes = [1 2]; %ring vertical/horizontal
 block_pool = repmat(blocktypes,1,nrepeat);
 block_seq = reshape([block_pool;zeros(size(block_pool))],1,[]);
 
@@ -45,8 +46,13 @@ sid = 0;
 srect = [0 0 1024 768];
 fixsi = 8;
 checkfreq = 8; %flickering at 8 Hz
-nrings = 3;
+nmeridians = 2;
+radius_mask = srect(4); % mask to create meridians
 
+coverangle = 30;
+StartAngle = [coverangle/2 , coverangle/2-180;
+              coverangle/2-90, coverangle/2+90];
+arcAngle = 180-coverangle;
 
 % colors
 gray = [127 127 127];
@@ -92,8 +98,8 @@ end
 
 subj=input('subject?','s');
 
-log_data = [pwd,'/ring-loc-',subj,'-log'];
-design_data = [pwd,'/ring-loc-',subj,'-design'];
+log_data = [pwd,'/meridian-loc-',subj,'-log'];
+design_data = [pwd,'/meridian-loc-',subj,'-design'];
 
 outdesign = fopen(design_data,'w');
 fprintf(outdesign,'%s\t %s\n','block_start','block_seq');
@@ -105,13 +111,12 @@ fprintf(outlog,'%s\t %s\n','when','what');
 
 %% initialize window
 [mainwin,rect] = Screen('OpenWindow', sid, bgcolor, srect);
-Screen('BlendFunction', mainwin, GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 % basic screen
 ifi = Screen('GetFlipInterval', mainwin);
 %center = [(rect(3)-rect(1))/2, (rect(4)-rect(2))/2];
 fixRect = CenterRect([0 0 fixsi fixsi], rect);
-
+arcrect = CenterRect([-radius_mask,-radius_mask,radius_mask,radius_mask],rect);
 %% frequency 8 Hz
 checkt = 1/checkfreq;
 waitframes = round(checkt/ifi);
@@ -123,28 +128,10 @@ for p = 1:npics
     orig_pics{p} = imread(['./checkerboards/bildAll',num2str(p),'.png']);
 end
 
-% construct stimuli %% same as in lgn_search!!!!!
-corticalStimSize= 6.5;%in mm
-proximalStimDist=.8;% in degrees!!
-stimSeparation= 1.2; %in degrees, to be scaled
-jitterDistance=.12;%in degrees; to be scaled
-
-%generate radius
-ringRadius = NaN(nrings,2); %need an inner radius and an outer radius
-jpix=ang2pix(jitterDistance);
-
-for r=1:nrings
-    ecc=proximalStimDist+stimSeparation*r^2;
-    gratingSize=CorticalScaleFactor(corticalStimSize,ecc);
-    eccentricity=ang2pix(ecc);
-    stimRadius = ang2pix(gratingSize)/2;
-    ringRadius(r,1) = eccentricity - stimRadius - jpix;
-    ringRadius(r,2) = eccentricity + stimRadius + jpix;
-end
-
-ringhandle = NaN(nrings,npics);
-for ring = 1:nrings
-    ringhandle(ring,:) = doring(ringRadius(ring,1),ringRadius(ring,2));
+% construct stimuli
+merhandle = NaN(nmeridians,npics);
+for m = 1:nmeridians
+    merhandle(m,:) = domeridian(StartAngle(m,:),arcAngle);
 end
 
 
@@ -166,7 +153,7 @@ for block = 1:nblock
     
     while tr < block_start(block) + blocktr
         if btype
-            Screen('DrawTexture', mainwin, ringhandle(btype,dp));
+            Screen('DrawTexture', mainwin, merhandle(btype,dp));
             dp = mod(dp,8)+1;
         end
         Screen('FillRect', mainwin, fixcolor, fixRect);
@@ -212,16 +199,12 @@ sca;
 fprintf('Accuracy: %d\n',fixcor/nfix);
 
 %% function to create rings based on original textures
-    function ringhandle = doring(inner,outer)
-        % Create circular aperture for the alpha-channel:
-        [x,y]=meshgrid(1:rect(3), 1:rect(4));
-        dist = (x-mean(mean(x))).^2 + (y-mean(mean(y))).^2;
-        ringalpha = ((dist <= (outer)^2) & (dist >= (inner)^2)).*255;
-        
-        ringhandle = NaN(1,npics);
+    function mhandle = domeridian(Start,Arc)
+        mhandle = NaN(1,npics);
         for pic = 1:npics
-            rgbapic = cat(3,orig_pics{pic},ringalpha);
-            ringhandle(pic) = Screen('MakeTexture',mainwin,rgbapic);
+            mhandle(pic) = Screen('MakeTexture',mainwin,orig_pics{pic});
+            Screen('FillArc', mhandle(pic), gray,arcrect,Start(1),Arc);
+            Screen('FillArc', mhandle(pic), gray,arcrect,Start(2),Arc);
         end
     end
 
@@ -269,16 +252,6 @@ fprintf('Accuracy: %d\n',fixcor/nfix);
             end
             delete(tr_tmr);
         end
-    end
-%-----------------------------------------------------------------------------%
-    function pixels=ang2pix(ang)
-        pixpercm=rect(4)/monitorh;
-        pixels=tand(ang/2)*distance*2*pixpercm;
-    end
-%-----------------------------------------------------------------------------%
-    function stimSize=CorticalScaleFactor(corticalSize,eccentricity)
-        M=.065*eccentricity+.054;
-        stimSize=M*corticalSize;
     end
 end
 

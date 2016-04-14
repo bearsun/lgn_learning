@@ -1,6 +1,7 @@
-function lgn_search_fmri( debug )
-%LGN_SEARCH_FMRI Code for pre and post scan for lgn_learning project
+function lgn_popout_fmri( debug )
+%LGN_POPOUT_FMRI Code for pre and post scan for lgn_learning project
 %4/13/16 by Liwei
+% popout control for the main search task
 % use 3 rings since only have 4 buttons
 % 5 runs per session
 % 32 trials per run
@@ -31,8 +32,9 @@ ntrial = 32;
 
 %% geometry
 fixsi = 8;
-righthalf = 180;
-lefthalf = -180;
+ioratio = 1.5;
+% righthalf = 180;
+% lefthalf = -180;
 startAngle = 0;
 fullAngle=360;
 
@@ -110,9 +112,9 @@ end
 subj=input('subject?','s');
 session = input('session? (pre/post)','s');
 run=input('run? ');
-path_data = [pwd,'/data-',subj,'-',session,'-run',num2str(run)];
-log_data = [pwd,'/data-',subj,'-',session,'-run',num2str(run),'-log'];
-design_data = [pwd,'/data-',subj,'-',session,'-run',num2str(run),'-design'];
+path_data = [pwd,'/popout-',subj,'-',session,'-run',num2str(run)];
+log_data = [pwd,'/popout-',subj,'-',session,'-run',num2str(run),'-log'];
+design_data = [pwd,'/popout-',subj,'-',session,'-run',num2str(run),'-design'];
 
 outdesign = fopen(design_data,'w');
 fprintf(outdesign,'%s\t %s\t %s\n','tstart','targetindex','corkey');
@@ -293,16 +295,17 @@ fprintf('Accuracy: %d\n',mean(cor));
                         yjit=(-1)^randi(2)*sqrt(jpix^2-xjit^2);
                         jit(ring,stimIndex,:)=[xjit;yjit;xjit;yjit];
                     end
-                    loc = squeeze(stimLocation(ring,stimIndex,:))+squeeze(jit(ring,stimIndex,:));
+                    loc1 = squeeze(stimLocation(ring,stimIndex,:))+squeeze(jit(ring,stimIndex,:));
+                    loc2 = CenterRect(loc1'/ioratio,loc1');
                     %                 r = (loc(3)-loc(1))/2;
                     if stimIndex==tpos&&ring==tring
                         % Draw Target
-                        Screen('FillArc',buffers(frame),red,loc,startAngle,lefthalf);
-                        Screen('FillArc',buffers(frame),green,loc,startAngle,righthalf);
+                        Screen('FillArc',buffers(frame),green,loc1,startAngle,fullAngle);
+                        Screen('FillArc',buffers(frame),red,loc2,startAngle,fullAngle);
                     else
                         % Draw Distractors
-                        Screen('FillArc',buffers(frame),green,loc,startAngle,lefthalf);
-                        Screen('FillArc',buffers(frame),red,loc,startAngle,righthalf);
+                        Screen('FillArc',buffers(frame),red,loc1,startAngle,fullAngle);
+                        Screen('FillArc',buffers(frame),green,loc2,startAngle,fullAngle);
                     end
                     Screen('DrawArc',buffers(frame),black,squeeze(stimLocation(ring,stimIndex,:))+jph,startAngle,fullAngle);
                     %                 Screen('DrawLine', buffers(i), black, loc(1), loc(2) + r, loc(3), loc(2) + r);
