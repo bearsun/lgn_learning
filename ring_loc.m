@@ -92,8 +92,8 @@ end
 
 subj=input('subject?','s');
 
-log_data = [pwd,'/ring-loc-',subj,'-log'];
-design_data = [pwd,'/ring-loc-',subj,'-design'];
+log_data = [pwd,'/data/ring-loc-',subj,'-log'];
+design_data = [pwd,'/data/ring-loc-',subj,'-design'];
 
 outdesign = fopen(design_data,'w');
 fprintf(outdesign,'%s\t %s\n','block_start','block_seq');

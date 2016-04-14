@@ -98,8 +98,8 @@ end
 
 subj=input('subject?','s');
 
-log_data = [pwd,'/meridian-loc-',subj,'-log'];
-design_data = [pwd,'/meridian-loc-',subj,'-design'];
+log_data = [pwd,'/data/meridian-loc-',subj,'-log'];
+design_data = [pwd,'/data/meridian-loc-',subj,'-design'];
 
 outdesign = fopen(design_data,'w');
 fprintf(outdesign,'%s\t %s\n','block_start','block_seq');

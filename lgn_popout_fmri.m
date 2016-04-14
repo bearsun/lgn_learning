@@ -112,9 +112,9 @@ end
 subj=input('subject?','s');
 session = input('session? (pre/post)','s');
 run=input('run? ');
-path_data = [pwd,'/popout-',subj,'-',session,'-run',num2str(run)];
-log_data = [pwd,'/popout-',subj,'-',session,'-run',num2str(run),'-log'];
-design_data = [pwd,'/popout-',subj,'-',session,'-run',num2str(run),'-design'];
+path_data = [pwd,'/data/popout-',subj,'-',session,'-run',num2str(run)];
+log_data = [pwd,'/data/popout-',subj,'-',session,'-run',num2str(run),'-log'];
+design_data = [pwd,'/data/popout-',subj,'-',session,'-run',num2str(run),'-design'];
 
 outdesign = fopen(design_data,'w');
 fprintf(outdesign,'%s\t %s\t %s\n','tstart','targetindex','corkey');
