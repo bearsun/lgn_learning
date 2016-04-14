@@ -95,8 +95,8 @@ log_data = [pwd,'/ring-loc-',subj,'-log'];
 design_data = [pwd,'/ring-loc-',subj,'-design'];
 
 outdesign = fopen(design_data,'w');
-fprintf(outdesign,'%s\t %s\t %s\n','block_start','block_seq');
-fprintf(outdesign,'%d %d %d\n', [block_start;block_seq]);
+fprintf(outdesign,'%s\t %s\n','block_start','block_seq');
+fprintf(outdesign,'%d\t %d\n', [block_start;block_seq]);
 fclose(outdesign);
 
 outlog = fopen(log_data,'w');
