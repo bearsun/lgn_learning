@@ -8,7 +8,7 @@ subj = input('subject?: ','s');
 IOPort('Closeall');
 P4 = IOPort('OpenSerialPort', '/dev/ttyUSB0','BaudRate=115200');
 
-rightKey = 51;
+rightKey = 52;
 leftKey = 50;
 upKey = 49;
 keysWanted=[rightKey leftKey upKey]; %NB upkeyremoved for this block
@@ -57,7 +57,7 @@ frameRect=CenterRect(frameRect, screenSize);
 Screen('FrameRect',w,fixColor,frameRect);
 Screen('FillRect',w,fixColor,fixRect);
 Screen('Flip',w,[],0);
-KbWait([],2);
+IoWait;
 
 for repeat=1:nRepeats
     red=reds(repeat,:);
@@ -103,18 +103,19 @@ save([pwd,'/subinfo/',subj,'_fmri.mat'],'rg');
             Screen('Flip',w,[],0);%flip one more time and clear the buffer
             
             data = IOPort('Read',P4);
-            if ~empty(data)
-                if ismember(data,keysWanted) && numel(data) == 1;
-                    color(3)=color(3)+inc*ismember(keysWanted,data)';
-                    if color(3)>1
-                        color(3)=1;
-                    elseif color(3)<0
-                        color(3)=0;
+            if ~isempty(data)
+                if numel(data) == 1
+                    if ismember(data,keysWanted)
+                        color(3)=color(3)+inc*ismember(keysWanted,data)';
+                        if color(3)>1
+                            color(3)=1;
+                        elseif color(3)<0
+                            color(3)=0;
+                        end
+                        if data == keysWanted(3)
+                            break;
+                        end
                     end
-                    if data == keysWanted(3)
-                        break;
-                    end
-                    
                 end
             end
             
@@ -122,9 +123,19 @@ save([pwd,'/subinfo/',subj,'_fmri.mat'],'rg');
         Screen('FrameRect',w,fixColor,frameRect);
         Screen('FillRect',w,fixColor,fixRect);
         Screen('Flip',w,[],0);
-        KbWait([],2);
+        IoWait;
     end
+    
 
+    function IoWait
+        while 1
+            data = IOPort('Read',P4);
+            if ~isempty(data)
+                break
+            end
+            WaitSecs(0.001);
+        end
+    end
     function ptb=hsv2ptb(hsv)
         ptb=maxRGB*hsv2rgb(hsv);
     end

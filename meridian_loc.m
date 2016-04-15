@@ -22,6 +22,7 @@ rng('shuffle');
 % distance=55; %25;% in cm
 
 tr = 0;
+tbeginning = NaN;
 pretr = 5;
 blocktr = 6;
 nrepeat = 8;
@@ -45,7 +46,7 @@ nfix = numel(fixtr);
 sid = 0;
 srect = [0 0 1024 768];
 fixsi = 8;
-checkfreq = 16; %flickering at 8 Hz
+checkfreq = 8; %flickering at 8 Hz
 nmeridians = 2;
 radius_mask = srect(4); % mask to create meridians
 
@@ -80,8 +81,8 @@ else
     trigger=53;
     kn0 = buttons(2); %left
     kn1 = buttons(1); %top
-    kn2 = buttons(3); %right
-    kn3 = buttons(4); %bottom
+    kn2 = buttons(4); %right
+    kn3 = buttons(3); %bottom
 end
 
 possiblekn = [kn0,kn1,kn2,kn3];
@@ -212,10 +213,13 @@ fprintf('Accuracy: %d\n',fixcor/nfix);
     function [data, when] = ReadScanner(Port)
         [data, when] = IOPort('Read',Port);
         
-        if ~empty(data)
+        if ~isempty(data)
             tr=tr+sum(data==trigger);
-            fprintf('%d\t %d\n',when,tr);
-            fprintf(outlog, '%d\t %d\n',when,tr);
+            if tr == 1
+                tbeginning = when;
+            end
+            fprintf('%d\t %d\n',when-tbeginning,tr);
+            fprintf(outlog, '%d\t %d\n',when-tbeginning,tr);
         end
     end
 

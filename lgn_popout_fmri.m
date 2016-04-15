@@ -44,6 +44,7 @@ fullAngle=360;
 
 %% mri param
 tr = 0; %TR counter
+tbeginning = NaN;
 pretr = 5; % so the 6th volume is actually the 1st volume of the 1st trial
 %posttr = 2;
 pool_isi = 2:5; % jitter 2 3 4 5 TRs
@@ -89,8 +90,8 @@ else
     trigger=53;
     kn0 = buttons(2); %left
     kn1 = buttons(1); %top
-    kn2 = buttons(3); %right
-    kn3 = buttons(4); %bottom
+    kn2 = buttons(4); %right
+    kn3 = buttons(3); %bottom
 end
 
 possiblekn = [kn0,kn1,kn2,kn3];
@@ -132,7 +133,7 @@ outlog = fopen(log_data,'w');
 fprintf(outlog,'%s\t %s\n','when','what');
 
 outfile = fopen(path_data,'w');
-fprintf(outfile,'%s\t %s\t %s\t %s\t %s\t %s\n','subject' ,'session' ,'trial','targetindex' , 'keypressed' , 'cor');
+fprintf(outfile,'%s\t %s\t %s\t %s\t %s\t %s\t %s\n','subject' ,'session' ,'trial','targetindex' , 'keypressed' , 'cor','rt');
 
 %% initialize window
 [mainwin,rect] = Screen('OpenWindow', sid, bgcolor, srect);
@@ -200,6 +201,7 @@ for trial = 1:ntrial
     
     bresponded = 0; %responded flag
     keypressed = NaN;
+    rt = NaN;
     
     % wait until certain TR to start
     TRWait(tstart_tr(trial));
@@ -253,8 +255,8 @@ for trial = 1:ntrial
         Screen('FillRect', mainwin, truered, fixRect);
         cor(trial) = 0;
     end
-    fprintf(outfile,'%s\t %s\t %d\t %d\t %d\t %d\n', ...
-        subj, session, trial, ti, keypressed, cor(trial));
+    fprintf(outfile,'%s\t %s\t %d\t %d\t %d\t %d\t %d\n', ...
+        subj, session, trial, ti, keypressed, cor(trial),rt);
     Screen('Flip', mainwin);
     WaitSecs(.5);
     
@@ -328,10 +330,13 @@ fprintf('Accuracy: %d\n',mean(cor));
     function [data, when] = ReadScanner(Port)
         [data, when] = IOPort('Read',Port);
         
-        if ~empty(data)
+        if ~isempty(data)
             tr=tr+sum(data==trigger);
-            fprintf('%d\t %d\n',when,tr);
-            fprintf(outlog, '%d\t %d\n',when,tr);
+            if tr == 1
+                tbeginning = when;
+            end
+            fprintf('%d\t %d\n',when-tbeginning,tr);
+            fprintf(outlog, '%d\t %d\n',when-tbeginning,tr);
         end
     end
 

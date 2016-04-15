@@ -22,11 +22,11 @@ global rect
 %Priority(1);
 rng('shuffle');
 
-% monitorh=34.3; %30; %12;% in cm
-% distance=110.5; %55; %25;% in cm
+monitorh=34.3; %30; %12;% in cm
+distance=110.5; %55; %25;% in cm
 % 
-monitorh = 30;
-distance = 57;
+% monitorh = 30;
+% distance = 57;
 
 sid = 0;
 srect = [0 0 1024 768];
@@ -46,6 +46,7 @@ fullAngle=360;
 
 %% mri param
 tr = 0; %TR counter
+tbeginning = NaN;
 pretr = 5; % so the 6th volume is actually the 1st volume of the 1st trial
 %posttr = 2;
 pool_isi = 2:5; % jitter 2 3 4 5 TRs
@@ -91,8 +92,8 @@ else
     trigger=53;
     kn0 = buttons(2); %left
     kn1 = buttons(1); %top
-    kn2 = buttons(3); %right
-    kn3 = buttons(4); %bottom
+    kn2 = buttons(4); %right
+    kn3 = buttons(3); %bottom
 end
 
 possiblekn = [kn0,kn1,kn2,kn3];
@@ -202,6 +203,7 @@ for trial = 1:ntrial
     
     bresponded = 0; %responded flag
     keypressed = NaN;
+    rt = NaN;
     
     % wait until certain TR to start
     TRWait(tstart_tr(trial));
@@ -329,10 +331,13 @@ fprintf('Accuracy: %d\n',mean(cor));
     function [data, when] = ReadScanner(Port)
         [data, when] = IOPort('Read',Port);
         
-        if ~empty(data)
+        if ~isempty(data)
             tr=tr+sum(data==trigger);
-            fprintf('%d\t %d\n',when,tr);
-            fprintf(outlog, '%d\t %d\n',when,tr);
+            if tr == 1
+                tbeginning = when;
+            end
+            fprintf('%d\t %d\n',when-tbeginning,tr);
+            fprintf(outlog, '%d\t %d\n',when-tbeginning,tr);
         end
     end
 
