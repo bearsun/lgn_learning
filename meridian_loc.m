@@ -21,6 +21,7 @@ rng('shuffle');
 % monitorh=30; %12;% in cm
 % distance=55; %25;% in cm
 
+postscreenwait = 6; % Screen wait after IOport closed
 tr = 0;
 tbeginning = NaN;
 pretr = 5;
@@ -195,6 +196,7 @@ else
     IOPort('Closeall');
 end
 
+WaitSecs(postscreenwait);
 sca;
 
 fprintf('Accuracy: %d\n',fixcor/nfix);

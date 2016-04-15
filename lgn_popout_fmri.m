@@ -10,7 +10,7 @@ function lgn_popout_fmri( debug )
 % response period is included in ISI period (1TR to response)
 % each sti presentation for 2 TRs
 
-% 183 TRs, 6 min, actual images: 5 + 32 *(2 + 3.5) = 181
+% 184 TRs, 6 min, actual images: 5 + 32 *(2 + 3.5) = 181
 
 %% initialize everything
 clc;
@@ -43,6 +43,7 @@ startAngle = 0;
 fullAngle=360;
 
 %% mri param
+postscreenwait = 6; % Screen wait after IOport closed
 tr = 0; %TR counter
 tbeginning = NaN;
 pretr = 5; % so the 6th volume is actually the 1st volume of the 1st trial
@@ -273,7 +274,7 @@ if debug
 else
     IOPort('Closeall');
 end
-
+WaitSecs(postscreenwait);
 sca;
 
 fprintf('Accuracy: %d\n',mean(cor));
