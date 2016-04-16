@@ -9,9 +9,11 @@ function lgn_search_behav( debug )
 clc;
 global ptb_RootPath %#ok<NUSED>
 
+b = system('xrandr --screen 1 --output CRT2 --mode 1024x768 --rate 60');
+
 rng('shuffle');
-sid = 0;
-rect = [0 0 1024 768];
+sid = 1;
+%rect = [0 0 1024 768];
 
 monitorh=30; %12;% in cm
 distance=57; %25;% in cm
@@ -89,13 +91,13 @@ end
 path_data = [pwd,'/data/training-',subj,'-',num2str(session)];
 
 outfile = fopen(path_data,'w');
-fprintf(outfile,'%s\t %s\t %s\t %s\t %s\t %s\t %s\n','subject' ,'session' ,'trial','targetindex' , 'keypressed' , 'cor','rt');
+fprintf(outfile,'%s %s %s %s %s %s %s\n','subject' ,'session' ,'trial','targetindex' , 'keypressed' , 'cor','rt');
 
 abbreviatedFilename=[subj,'_',datestr(now,'mmdd')];
 disp('data_file_opened');
 
 %% initialize window
-[mainwin,rect] = Screen('OpenWindow', sid, bgcolor,rect);
+[mainwin,rect] = Screen('OpenWindow', sid, bgcolor);
 
 % open buffer
 buffers = NaN(nframes,1);
@@ -315,7 +317,7 @@ for block = 1:nblocks
             Screen('FillRect', mainwin, truered, fixRect);
             cor = 0;
         end
-        fprintf(outfile,'%s\t %d\t %d\t %d\t %d\t %d\t %d\n',subj, session ,trial, targetindex , keypressed , cor, rt);
+        fprintf(outfile,'%s %d %d %d %d %d %d\n',subj, session ,trial, ti , keypressed , cor, rt);
         Screen('Flip', mainwin);
         if trial == ntrialsperb
             WaitSecs(1);
