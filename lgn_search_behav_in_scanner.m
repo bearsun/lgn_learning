@@ -56,6 +56,9 @@ kn3 = buttons(3); %bottom
 possiblekn = [kn0,kn1,kn2,kn3];
 
 %% target & answer sequence
+searchtime = 2;% in trs
+nframes = searchtime * 2 * 60;
+
 nrings=3;
 stimPerRing=8;
 nballs=nrings*stimPerRing;
@@ -73,7 +76,7 @@ IOPort('Closeall');
 P4 = IOPort('OpenSerialPort', '/dev/ttyUSB0','BaudRate=115200'); %open port for receiving scanner pulse
 
 %% open files
-path_data = [pwd,'/data/pretrain-',subj,'-',num2str(session)];
+path_data = [pwd,'/data/pretrain-',subj];
 
 outfile = fopen(path_data,'w');
 fprintf(outfile,'%s %s %s %s %s %s %s\n','subject' ,'trial','targetindex' , 'keypressed' , 'cor','rt');
@@ -138,17 +141,16 @@ disp('pass_position_generation');
 % accuracy
 cor = NaN(ntrial,1);
 
-DrawFormattedText(mainwin, ['Block No.', num2str(block)], 'center','center',textcolor);
-Screen('Flip',mainwin);
-IoWait;
-WaitSecs(0.5);
-IOPort('Read',P4);
-
+% DrawFormattedText(mainwin, 'Press any button to start', 'center','center',textcolor);
+% Screen('Flip',mainwin);
+% IoWait;
+% WaitSecs(0.5);
+% IOPort('Read',P4);
 
 for trial = 1:ntrial
     % prepare and wait to start
     t2 = GetSecs;
-    ti=targetindex(block,trial);
+    ti=targetindex(trial);
     disp(ti);
     tring=ceil(ti/stimPerRing);
     disp(tring);
@@ -216,7 +218,7 @@ for trial = 1:ntrial
     end
     fprintf(outfile,'%s %d %d %d %d %d\n',subj, trial, ti , keypressed , cor(trial), rt);
     Screen('Flip', mainwin);
-    if trial == ntrialsperb
+    if trial == ntrial
         WaitSecs(1);
     end
 end

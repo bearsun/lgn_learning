@@ -114,7 +114,7 @@ corkeyarr(temp_ring == 0) = kn0;
 if ~debug
     IOPort('Closeall');
     P4 = IOPort('OpenSerialPort', '/dev/ttyUSB0','BaudRate=115200'); %open port for receiving scanner pulse
-    fRead = @() ReadScanner(P4);
+    fRead = @() ReadScanner;
 else
     fRead = @() ReadFakeTrigger;
     tr_tmr = timer('TimerFcn',@SetTrigger,'Period',2,'ExecutionMode','fixedDelay','Name','tr_timer');
@@ -222,6 +222,8 @@ for trial = 1:ntrial
                     fprintf(outlog,'BUTTON RECIEVED: %d @ %d\n',keypressed,rt);
                 end
             end
+        else
+            fRead();
         end
         Screen('DrawTexture', mainwin, buffers(i));
         Screen('Flip', mainwin);
@@ -328,8 +330,8 @@ fprintf('Accuracy: %d\n',mean(cor));
     end
 
 %% function wrapper for IOPort('Read'),also counting the total TRs
-    function [data, when] = ReadScanner(Port)
-        [data, when] = IOPort('Read',Port);
+    function [data, when] = ReadScanner
+        [data, when] = IOPort('Read',P4);
         
         if ~isempty(data)
             tr=tr+sum(data==trigger);

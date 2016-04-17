@@ -51,7 +51,7 @@ checkfreq = 8; %flickering at 8 Hz
 nmeridians = 2;
 radius_mask = srect(4); % mask to create meridians
 
-coverangle = 30;
+coverangle = 22.5;
 StartAngle = [coverangle/2 , coverangle/2-180;
               coverangle/2-90, coverangle/2+90];
 arcAngle = 180-coverangle;

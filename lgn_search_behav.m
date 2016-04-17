@@ -12,8 +12,8 @@ global ptb_RootPath %#ok<NUSED>
 b = system('xrandr --screen 1 --output CRT2 --mode 1024x768 --rate 60');
 
 rng('shuffle');
-sid = 1;
-%rect = [0 0 1024 768];
+sid = 0;
+rect = [0 0 1024 768];
 
 monitorh=30; %12;% in cm
 distance=57; %25;% in cm
@@ -97,7 +97,7 @@ abbreviatedFilename=[subj,'_',datestr(now,'mmdd')];
 disp('data_file_opened');
 
 %% initialize window
-[mainwin,rect] = Screen('OpenWindow', sid, bgcolor);
+[mainwin,rect] = Screen('OpenWindow', sid, bgcolor,rect);
 
 % open buffer
 buffers = NaN(nframes,1);

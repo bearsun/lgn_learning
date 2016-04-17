@@ -1,6 +1,6 @@
 function rg=IsoRG_behav
 % function for isolumiance between red/green, blue/yellow
-monitor=1; %primary monitor for display
+monitor=0; %primary monitor for display
 
 subj = input('subject?: ','s');
 
@@ -38,7 +38,7 @@ colorRect=[0 0 100 100];
 frameRect=[0 0 110 110];
 
 flickerRate = 30; %in Hz
-[w,screenSize]=Screen('OpenWindow',monitor,bgColor);
+[w,screenSize]=Screen('OpenWindow',monitor,bgColor,[0 0 1024 768]);
 HideCursor;
 
 refreshRate=Screen('FrameRate', w);
